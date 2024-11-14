@@ -84,12 +84,31 @@ def many_comments(author, new):
             news=new,
             author=author,
             text=f'Текст {index}',
-            created=today - timedelta(days=index), # кривая дата при создании
+            #created=today - timedelta(days=index), # кривая дата при создании
         )
         for index in range(11)
         ]
     Comment.objects.bulk_create(all_comment)
+    i=0
+    good_data_comments=[]
+    for value in all_comment:
+        value.created = today - timedelta(days=i),
+        i+=1
+        good_data_comments.append(value)
+    
     #return all_comment
-    all = {'all_comment': all_comment, 'new': new}
+    all = {'all_comment': good_data_comments, 'new': new}
     #all = ['new'] = new
     return all
+
+@pytest.fixture
+def pk_for_args(new):  
+    # И возвращает кортеж, который содержит slug заметки.
+    # На то, что это кортеж, указывает запятая в конце выражения.
+    return (new.pk,) 
+
+@pytest.fixture
+def form_data():
+    return {
+        'text': 'Новый текст',
+    } 

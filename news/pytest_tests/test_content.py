@@ -3,8 +3,9 @@ import pytest
 
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
-
+from news.forms import CommentForm
 from news.models import Comment, News
+from django.test.client import Client
 
 
 
@@ -33,7 +34,6 @@ def test_news_order(many_news, author_client):
 
 
 def test_comment_order(many_comments, author_client):
-    a=1
     url = reverse('news:detail', args=(many_comments['new'].pk,))
     response = author_client.get(url)
     news = response.context['news']
@@ -41,3 +41,16 @@ def test_comment_order(many_comments, author_client):
     all_timestamps = [comment.created for comment in all_comments]
     sorted_timestamps = sorted(all_timestamps)
     assert all_timestamps == sorted_timestamps
+
+
+def test_login_client_has_form(author_client, pk_for_args):
+    url = reverse('news:detail', args=(pk_for_args))
+    response = author_client.get(url)
+    assert 'form' in response.context
+    assert isinstance(response.context['form'], CommentForm)
+    
+
+def test_anonymous_client_has_no_form(client, pk_for_args):
+    url = reverse('news:detail', args=(pk_for_args))
+    response = client.get(url)
+    assert 'form'  not in response.context
