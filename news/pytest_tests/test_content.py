@@ -36,11 +36,8 @@ def test_comment_order(many_comments, author_client):
     a=1
     url = reverse('news:detail', args=(many_comments['new'].pk,))
     response = author_client.get(url)
-    object_list = response.context['object_list']
-    a=1
-    # Получаем даты новостей в том порядке, как они выведены на странице.
-    #all_dates = [comment.date for comment in object_list]
-    # Сортируем полученный список по убыванию.
-    #sorted_dates = sorted(all_dates, reverse=True)
-    # Проверяем, что исходный список был отсортирован правильно.
-    assert 1 == 1
+    news = response.context['news']
+    all_comments = news.comment_set.all()
+    all_timestamps = [comment.created for comment in all_comments]
+    sorted_timestamps = sorted(all_timestamps)
+    assert all_timestamps == sorted_timestamps

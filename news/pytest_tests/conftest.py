@@ -84,7 +84,7 @@ def many_comments(author, new):
             news=new,
             author=author,
             text=f'Текст {index}',
-            created=today - timedelta(days=index),
+            created=today - timedelta(days=index), # кривая дата при создании
         )
         for index in range(11)
         ]
