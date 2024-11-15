@@ -1,13 +1,6 @@
-from http import HTTPStatus
-import pytest
-
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
+
 from news.forms import CommentForm
-from news.models import Comment, News
-from django.test.client import Client
-
-
 
 
 def test_note_in_list_less_then_10(author_client, many_news):
@@ -43,14 +36,14 @@ def test_comment_order(many_comments, author_client):
     assert all_timestamps == sorted_timestamps
 
 
-def test_login_client_has_form(author_client, pk_for_args):
-    url = reverse('news:detail', args=(pk_for_args))
+def test_login_client_has_form(author_client, detail_url):
+    url = detail_url
     response = author_client.get(url)
     assert 'form' in response.context
     assert isinstance(response.context['form'], CommentForm)
-    
 
-def test_anonymous_client_has_no_form(client, pk_for_args):
-    url = reverse('news:detail', args=(pk_for_args))
+
+def test_anonymous_client_has_no_form(client, detail_url):
+    url = detail_url
     response = client.get(url)
-    assert 'form'  not in response.context
+    assert 'form' not in response.context

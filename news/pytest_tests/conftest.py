@@ -5,6 +5,7 @@ import pytest
 from django.test.client import Client
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.urls import reverse
 # Импортируем модель заметки, чтобы создать экземпляр.
 from news.models import Comment, News
 
@@ -53,7 +54,7 @@ def comment(author, new):
     com = Comment.objects.create(  # Создаём объект заметки.
         news=new,
         author=author,
-        text='Текст'
+        text='Текст комментария'
     )
     #news=cls.news, author=cls.author, text=f'Tекст {index}',
     return com
@@ -112,3 +113,8 @@ def form_data():
     return {
         'text': 'Новый текст',
     } 
+
+#url = reverse('news:detail', args=(new.pk,))
+@pytest.fixture
+def detail_url(new):
+    return reverse('news:detail', args=(new.pk,))
