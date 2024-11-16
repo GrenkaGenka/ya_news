@@ -1,33 +1,27 @@
+from django.conf import settings
 from django.urls import reverse
 
 from news.forms import CommentForm
 
 
-def test_note_in_list_less_then_10(author_client, many_news):
-    url = reverse('news:home')
-    # Запрашиваем страницу со списком заметок:
+def test_note_in_list_less_then_10(author_client, home_url, many_news):
+    url = home_url
     response = author_client.get(url)
-    # Получаем список объектов из контекста:
-    object_list = response.context['object_list']
-    notes_count = object_list.count()
-    # Проверяем, что заметка находится в этом списке:
-    assert notes_count <= 10
+    notes_count = response.context['object_list'].count()
+    assert notes_count <= settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-def test_news_order(many_news, author_client):
-    url = reverse('news:home')
+def test_news_order(many_news, author_client, home_url):
+    url = home_url
     response = author_client.get(url)
-    object_list = response.context['object_list']
-    # Получаем даты новостей в том порядке, как они выведены на странице.
-    all_dates = [news.date for news in object_list]
-    # Сортируем полученный список по убыванию.
+    objects = response.context['object_list']
+    all_dates = [news.date for news in objects]
     sorted_dates = sorted(all_dates, reverse=True)
-    # Проверяем, что исходный список был отсортирован правильно.
     assert all_dates == sorted_dates
 
 
 def test_comment_order(many_comments, author_client):
-    url = reverse('news:detail', args=(many_comments['new'].pk,))
+    url = reverse('news:detail', args=(many_comments.pk,))
     response = author_client.get(url)
     news = response.context['news']
     all_comments = news.comment_set.all()
